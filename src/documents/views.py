@@ -1,6 +1,7 @@
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.views.generic import DetailView, FormView, TemplateView
 from django_filters.rest_framework import DjangoFilterBackend
+from django.utils.cache import patch_response_headers
 from django.conf import settings
 
 from paperless.db import GnuPG
@@ -56,10 +57,10 @@ class FetchView(SessionOrBasicAuthMixin, DetailView):
         }
 
         if self.kwargs["kind"] == "thumb":
-            return HttpResponse(
+            return patch_response_headers(HttpResponse(
                 self._get_raw_data(self.object.thumbnail_file),
                 content_type=content_types[Document.TYPE_PNG]
-            )
+            ))
 
         response = HttpResponse(
             self._get_raw_data(self.object.source_file),
