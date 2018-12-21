@@ -1,9 +1,11 @@
 {% extends 'admin/change_form.html' %}
 
+{% load static %}
+
 {% block field_sets %}
 
 	<fieldset class="module aligned pdfpreview">
-		<iframe src="{% url 'fetch' kind='doc' pk=object_id %}"></iframe>
+		<iframe src="{% static "pdf.js/web/viewer.html" %}?file={% url 'fetch' kind='doc' pk=object_id %}"></iframe>
 	</fieldset>
 
     {{ block.super }}
