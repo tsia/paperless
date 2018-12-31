@@ -311,7 +311,7 @@ FY_END = os.getenv("PAPERLESS_FINANCIAL_YEAR_END")
 # Specify the default date order (for autodetected dates)
 DATE_ORDER = os.getenv("PAPERLESS_DATE_ORDER", "DMY")
 FILENAME_DATE_ORDER = os.getenv("PAPERLESS_FILENAME_DATE_ORDER")
-CACHE_MIDDLEWARE_SECONDS = os.getenv("PAPERLESS_CACHE_MIDDLEWARE_SECONDS", 31536000)
+CACHE_MIDDLEWARE_SECONDS = int(os.getenv("PAPERLESS_CACHE_MIDDLEWARE_SECONDS", 31536000))
 
 # Specify for how many years a correspondent is considered recent. Recent
 # correspondents will be shown in a separate "Recent correspondents" filter as

@@ -57,10 +57,12 @@ class FetchView(SessionOrBasicAuthMixin, DetailView):
         }
 
         if self.kwargs["kind"] == "thumb":
-            return patch_response_headers(HttpResponse(
+            response = HttpResponse(
                 self._get_raw_data(self.object.thumbnail_file),
                 content_type=content_types[Document.TYPE_PNG]
-            ))
+            )
+            patch_response_headers(response)
+            return response
 
         response = HttpResponse(
             self._get_raw_data(self.object.source_file),
