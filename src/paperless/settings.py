@@ -145,7 +145,7 @@ DATABASES = {
     }
 }
 
-if os.getenv("PAPERLESS_DBUSER"):
+if os.getenv("PAPERLESS_DBUSER") and os.getenv("PAPERLESS_DBENGINE", "postgres") == "postgres":
     DATABASES["default"] = {
         "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.getenv("PAPERLESS_DBNAME", "paperless"),
@@ -158,6 +158,18 @@ if os.getenv("PAPERLESS_DBUSER"):
     if os.getenv("PAPERLESS_DBPORT"):
         DATABASES["default"]["PORT"] = os.getenv("PAPERLESS_DBPORT")
 
+if os.getenv("PAPERLESS_DBUSER") and os.getenv("PAPERLESS_DBENGINE", "postgres") == "mysql":
+    DATABASES["default"] = {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": os.getenv("PAPERLESS_DBNAME", "paperless"),
+        "USER": os.getenv("PAPERLESS_DBUSER"),
+    }
+    if os.getenv("PAPERLESS_DBPASS"):
+        DATABASES["default"]["PASSWORD"] = os.getenv("PAPERLESS_DBPASS")
+    if os.getenv("PAPERLESS_DBHOST"):
+        DATABASES["default"]["HOST"] = os.getenv("PAPERLESS_DBHOST")
+    if os.getenv("PAPERLESS_DBPORT"):
+        DATABASES["default"]["PORT"] = os.getenv("PAPERLESS_DBPORT")
 
 # Password validation
 # https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
