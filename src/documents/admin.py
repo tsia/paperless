@@ -184,7 +184,7 @@ class DocumentAdmin(CommonAdmin):
 
     filter_horizontal = ("tags",)
 
-    ordering = ["-created", "correspondent"]
+    ordering = ["-added", "correspondent"]
 
     actions = [
         add_tag_to_selected,
