@@ -7,6 +7,7 @@ from django.conf import settings
 from paperless.db import GnuPG
 from paperless.mixins import SessionOrBasicAuthMixin
 from paperless.views import StandardPagination
+from paperless.views import PageNumberPagination
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.mixins import (
     DestroyModelMixin,
@@ -96,12 +97,17 @@ class PushView(SessionOrBasicAuthMixin, FormView):
     def form_invalid(self, form):
         return HttpResponseBadRequest(str(form.errors))
 
+class LargeResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page_size'
+    max_page_size = None
+
 
 class CorrespondentViewSet(ModelViewSet):
     model = Correspondent
     queryset = Correspondent.objects.all()
     serializer_class = CorrespondentSerializer
-    pagination_class = StandardPagination
+    pagination_class = LargeResultsSetPagination
     permission_classes = (IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = CorrespondentFilterSet
@@ -112,7 +118,7 @@ class TagViewSet(ModelViewSet):
     model = Tag
     queryset = Tag.objects.all()
     serializer_class = TagSerializer
-    pagination_class = StandardPagination
+    pagination_class = LargeResultsSetPagination
     permission_classes = (IsAuthenticated,)
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = TagFilterSet
