@@ -67,8 +67,7 @@ class RasterisedDocumentParser(DocumentParser):
             out_path = text_document.get_thumbnail()
             os.unlink(txt_out_path)
 
-            text_document = TextDocumentParser(out_path)
-            return text_document.get_thumbnail()
+        return out_path
 
     def _is_ocred(self):
 
