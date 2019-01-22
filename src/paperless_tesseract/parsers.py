@@ -17,6 +17,7 @@ from documents.parsers import DocumentParser, ParseError
 
 from .languages import ISO639
 
+from paperless_text.parsers import TextDocumentParser
 
 class OCRError(Exception):
     pass
@@ -44,18 +45,27 @@ class RasterisedDocumentParser(DocumentParser):
         The thumbnail of a PDF is just a 500px wide image of the first page.
         """
 
-        out_path = os.path.join(self.tempdir, "convert.png")
+        try:
+            # Run convert to get a decent thumbnail
+            out_path = os.path.join(self.tempdir, "convert.png")
+            run_convert(
+                self.CONVERT,
+                "-scale", "500x5000",
+                "-alpha", "remove",
+                "{}[0]".format(self.document_path),
+                out_path
+            )
+            return out_path
+        except ParseError as e:
+            self._text = get_text_from_pdf(self.document_path)
 
-        # Run convert to get a decent thumbnail
-        run_convert(
-            self.CONVERT,
-            "-scale", "500x5000",
-            "-alpha", "remove",
-            "{}[0]".format(self.document_path),
-            out_path
-        )
+            out_path = os.path.join(self.tempdir, "convert.txt")
+            text_file = open(out_path, "w")
+            text_file.write(self._text)
+            text_file.close()
 
-        return out_path
+            text_document = TextDocumentParser(out_path)
+            return text_document.get_thumbnail()
 
     def _is_ocred(self):
 

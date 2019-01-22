@@ -150,6 +150,11 @@ class Consumer:
 
         try:
             thumbnail = parsed_document.get_optimised_thumbnail()
+        except ParseError as e:
+            text_parser = TextDocumentParser(doc)
+            thumbnail = text_parser.get_optimised_thumbnail
+
+        try:
             date = parsed_document.get_date()
             document = self._store(
                 parsed_document.get_text(),
