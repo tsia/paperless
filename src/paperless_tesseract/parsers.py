@@ -55,14 +55,17 @@ class RasterisedDocumentParser(DocumentParser):
                 "{}[0]".format(self.document_path),
                 out_path
             )
-            return out_path
         except ParseError as e:
             self._text = get_text_from_pdf(self.document_path)
 
-            out_path = os.path.join(self.tempdir, "convert.txt")
-            text_file = open(out_path, "w")
+            txt_out_path = os.path.join(self.tempdir, "convert.txt")
+            text_file = open(txt_out_path, "w")
             text_file.write(self._text)
             text_file.close()
+
+            text_document = TextDocumentParser(txt_out_path)
+            out_path = text_document.get_thumbnail()
+            os.unlink(txt_out_path)
 
             text_document = TextDocumentParser(out_path)
             return text_document.get_thumbnail()
