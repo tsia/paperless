@@ -81,12 +81,12 @@ class Command(BaseCommand):
         for d in (self.ORIGINAL_DOCS, self.THUMB_DOCS):
             os.makedirs(d, exist_ok=True)
 
-        logging.getLogger(__name__).info(
-            "Starting document consumer at {}{}".format(
-                directory,
-                " with inotify" if use_inotify else ""
-            )
-        )
+#        logging.getLogger(__name__).info(
+#            "Starting document consumer at {}{}".format(
+#                directory,
+#                " with inotify" if use_inotify else ""
+#            )
+#        )
 
         if options["oneshot"]:
             self.loop_step(mail_delta)
