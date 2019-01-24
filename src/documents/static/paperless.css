@@ -25,7 +25,7 @@ td a.tag {
 fieldset.pdfpreview {
   padding-left: 1.5em;
   float: right;
-  width: 50%;
+  width: 45%;
   height: 72em;
 }
 fieldset.pdfpreview iframe {
@@ -34,7 +34,7 @@ fieldset.pdfpreview iframe {
   border: none;
 }
 
-@media only screen and (max-width: 1761px) {
+@media only screen and (max-width: 1625px) {
   fieldset.pdfpreview {
     padding: 0;
     float: none;
