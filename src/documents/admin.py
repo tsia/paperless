@@ -289,7 +289,7 @@ class DocumentAdmin(CommonAdmin):
                 alt="Thumbnail of {}".format(obj.file_name),
                 title=obj.file_name
             ),
-            href=obj.download_url
+            href=reverse("admin:{}_{}_change".format(opts.app_label, opts.model_name),args=(obj.pk,),current_app=self.admin_site.name)
         )
 
     @mark_safe
