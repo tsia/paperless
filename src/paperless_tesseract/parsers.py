@@ -30,6 +30,7 @@ class RasterisedDocumentParser(DocumentParser):
     """
 
     CONVERT = settings.CONVERT_BINARY
+    GHOSTSCRIPT = settings.GS_BINARY
     DENSITY = settings.CONVERT_DENSITY if settings.CONVERT_DENSITY else 300
     THREADS = int(settings.OCR_THREADS) if settings.OCR_THREADS else None
     UNPAPER = settings.UNPAPER_BINARY
@@ -45,27 +46,56 @@ class RasterisedDocumentParser(DocumentParser):
         The thumbnail of a PDF is just a 500px wide image of the first page.
         """
 
+        out_path = os.path.join(self.tempdir, "convert.png")
+
+        # Run convert to get a decent thumbnail
         try:
-            # Run convert to get a decent thumbnail
-            out_path = os.path.join(self.tempdir, "convert.png")
             run_convert(
                 self.CONVERT,
                 "-scale", "500x5000",
                 "-alpha", "remove",
+                "-strip", "-trim",
                 "{}[0]".format(self.document_path),
                 out_path
             )
-        except ParseError as e:
-            self._text = get_text_from_pdf(self.document_path)
+        except ParseError:
+            # if convert fails, fall back to extracting
+            # the first PDF page as a PNG using Ghostscript
+            self.log(
+                "warning",
+                "Thumbnail generation with ImageMagick failed, "
+                "falling back to Ghostscript."
+            )
 
-            txt_out_path = os.path.join(self.tempdir, "convert.txt")
-            text_file = open(txt_out_path, "w")
-            text_file.write(self._text)
-            text_file.close()
+            try:
+                gs_out_path = os.path.join(self.tempdir, "gs_out.png")
+                cmd = [self.GHOSTSCRIPT,
+                    "-q",
+                    "-sDEVICE=pngalpha",
+                    "-o", gs_out_path,
+                    self.document_path]
+                if not subprocess.Popen(cmd).wait() == 0:
+                    raise ParseError("Thumbnail (gs) failed at {}".format(cmd))
 
-            text_document = TextDocumentParser(txt_out_path)
-            out_path = text_document.get_thumbnail()
-            os.unlink(txt_out_path)
+                # then run convert on the output from gs
+                run_convert(
+                    self.CONVERT,
+                    "-scale", "500x5000",
+                    "-alpha", "remove",
+                    "-strip", "-trim",
+                    gs_out_path,
+                    out_path
+                )
+                os.unlink(gs_out_path)
+            except ParseError:
+                txt_out_path = os.path.join(self.tempdir, "convert.txt")
+                text_file = open(txt_out_path, "w")
+                text_file.write(self._text)
+                text_file.close()
+
+                text_document = TextDocumentParser(txt_out_path)
+                out_path = text_document.get_thumbnail()
+                os.unlink(txt_out_path)
 
         return out_path
 
