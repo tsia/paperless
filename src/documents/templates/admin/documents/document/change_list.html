@@ -2,8 +2,15 @@
 
 
 {% load admin_actions from admin_list%}
+{% load i18n l10n admin_urls static %}
 {% load result_list from hacks %}
 
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+    &rsaquo; {{ cl.opts.verbose_name_plural|capfirst }}
+  </div>
+{% endblock %}
 
 {% block result_list %}
 	{% if action_form and actions_on_top and cl.show_admin_actions %}{% admin_actions %}{% endif %}
