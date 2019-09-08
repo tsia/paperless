@@ -299,4 +299,4 @@ def get_text_from_pdf(pdf_file):
         except pdftotext.Error:
             return ""
 
-    return "\n".join(pdf)
+    return re.sub(r"\r\n", "\n", re.sub(r"\n\n+", "\n\n", "\n".join(pdf))).strip()
