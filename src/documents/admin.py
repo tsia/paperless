@@ -281,6 +281,7 @@ class DocumentAdmin(DjangoQLSearchMixin, CommonAdmin):
 
     @mark_safe
     def thumbnail(self, obj):
+        opts = self.model._meta
         return self._html_tag(
             "a",
             self._html_tag(
