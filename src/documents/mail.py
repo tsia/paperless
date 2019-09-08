@@ -137,6 +137,9 @@ class Attachment(object):
         self.content_type = content_type
         self.data = data
         self.suffix = None
+        
+        if self.content_type == "application/octet-stream":
+            self.content_type = "application/pdf"
 
         m = self.SAFE_SUFFIX_REGEX.match(self.content_type)
         if not m:
