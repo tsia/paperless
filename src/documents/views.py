@@ -62,7 +62,7 @@ class FetchView(SessionOrBasicAuthMixin, DetailView):
                 self._get_raw_data(self.object.thumbnail_file),
                 content_type=content_types[Document.TYPE_PNG]
             )
-            cache.patch_cache_control(response, private=True)
+            cache.patch_cache_control(response, private=True, max_age=settings.CACHE_MIDDLEWARE_SECONDS)
             return response
 
         response = HttpResponse(
