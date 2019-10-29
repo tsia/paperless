@@ -10,7 +10,9 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
+import json
 import os
+import re
 
 from dotenv import load_dotenv
 
@@ -62,6 +64,7 @@ FORCE_SCRIPT_NAME = os.getenv("PAPERLESS_FORCE_SCRIPT_NAME")
 # Application definition
 
 INSTALLED_APPS = [
+    "whitenoise.runserver_nostatic",
 
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -92,6 +95,7 @@ if os.getenv("PAPERLESS_INSTALLED_APPS"):
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -100,6 +104,9 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+# Enable whitenoise compression and caching
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # We allow CORS from localhost:8080
 CORS_ORIGIN_WHITELIST = tuple(os.getenv("PAPERLESS_CORS_ALLOWED_HOSTS", "localhost:8080").split(","))
@@ -329,6 +336,11 @@ FY_END = os.getenv("PAPERLESS_FINANCIAL_YEAR_END")
 DATE_ORDER = os.getenv("PAPERLESS_DATE_ORDER", "DMY")
 FILENAME_DATE_ORDER = os.getenv("PAPERLESS_FILENAME_DATE_ORDER")
 CACHE_MIDDLEWARE_SECONDS = int(os.getenv("PAPERLESS_CACHE_MIDDLEWARE_SECONDS", 31536000))
+
+# Transformations applied before filename parsing
+FILENAME_PARSE_TRANSFORMS = []
+for t in json.loads(os.getenv("PAPERLESS_FILENAME_PARSE_TRANSFORMS", "[]")):
+    FILENAME_PARSE_TRANSFORMS.append((re.compile(t["pattern"]), t["repl"]))
 
 # Specify for how many years a correspondent is considered recent. Recent
 # correspondents will be shown in a separate "Recent correspondents" filter as

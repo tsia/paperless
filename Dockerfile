@@ -1,12 +1,13 @@
-FROM alpine:3.8
+FROM alpine:3.10
 
 LABEL maintainer="The Paperless Project https://github.com/the-paperless-project/paperless" \
       contributors="Guy Addadi <addadi@gmail.com>, Pit Kleyersburg <pitkley@googlemail.com>, \
         Sven Fischer <git-dev@linux4tw.de>"
 
-# Copy Pipfiles file and init script
+# Copy Pipfiles file, init script and gunicorn.conf
 COPY Pipfile* /usr/src/paperless/
 COPY scripts/docker-entrypoint.sh /sbin/docker-entrypoint.sh
+COPY scripts/gunicorn.conf /usr/src/paperless/
 
 # Set export and consumption directories
 ENV PAPERLESS_EXPORT_DIR=/export \
@@ -65,3 +66,5 @@ COPY src/ /usr/src/paperless/src/
 COPY data/ /usr/src/paperless/data/
 COPY media/ /usr/src/paperless/media/
 
+# Collect static files
+RUN sudo -HEu paperless /usr/src/paperless/src/manage.py collectstatic --clear --no-input
