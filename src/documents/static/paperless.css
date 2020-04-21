@@ -34,11 +34,3 @@ fieldset.pdfpreview iframe {
   border: none;
 }
 
-@media only screen and (max-width: 1625px) {
-  fieldset.pdfpreview {
-    padding: 0;
-    float: none;
-    width: 100%;
-    height: 100vh;
-  }
-}
